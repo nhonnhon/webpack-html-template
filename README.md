@@ -1,6 +1,6 @@
 # webpack-html-template
 
-Build a webpack template for html static, just frontend.
+Build a webpack template for html static, just frontend. Include and extend another file, combine sass from folder, combine js from another folder.
 
 ### Install
   - open command line and type: **$ npm install**

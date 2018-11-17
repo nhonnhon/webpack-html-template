@@ -1,5 +1,4 @@
-import $ from 'jquery';
-import datepicker from 'jquery-ui/ui/widgets/datepicker';
+require('jquery-ui/ui/widgets/datepicker');
 
 console.log('This is calendar fine');
 

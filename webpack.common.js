@@ -3,6 +3,7 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const webpack = require('webpack');
 
 const fs = require("fs");
 
@@ -112,6 +113,12 @@ module.exports = {
                 from: "./node_modules/jquery-ui/themes/base/images",
                 to: "assets/css/images"
             }
-        ])
+        ]),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
+            Popper: ['popper.js', 'default'], 
+        }),
     ].concat(htmlPlugins)
 };

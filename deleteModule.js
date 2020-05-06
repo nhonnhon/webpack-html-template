@@ -8,52 +8,66 @@ const rl = readline.createInterface({
 });
 
 function deleteModule() {
-    rl.question('Type ' + configs.txtBlue + 'exit ' + configs.textWhite + 'to quit or type module name to rename: ', answer => {
+    rl.question('Type ' + configs.txtBlue + 'exit ' + configs.colorReset + 'to quit or type module name to delete: ', async function(answer) {
         //check input is exit to close
-        if (answer.match(/^e(xit)?$/i)) {
+        if (answer == '' || answer.match(/^e(xit)?$/i)) {
             rl.close();
         } else {
             //check module already existed to deleted
             if (fs.existsSync(configs.dirModule + answer)){
                 //read file to remove import js
-                fs.readFile(configs.assets + configs.fileImportJs, 'utf-8', function (err, dataJs){
-                    if (err) throw err;
-                    var newDataJs = removeLineWillDelete(dataJs, answer);
-                    fs.writeFile(configs.assets + configs.fileImportJs, newDataJs, function (errUpdateJs){
-                        if (errUpdateJs) throw errUpdateJs;
-                        console.log('Unimport ' + configs.txtGreen + answer + configs.textWhite + '.js');
-                    })
-                });
+                let promise1 = new Promise((resolve) => {
+                  fs.readFile(configs.assets + configs.fileImportJs, 'utf-8', function (err, dataJs){
+                      if (err) throw err;
+                      var newDataJs = removeLineWillDelete(dataJs, answer);
+                      fs.writeFile(configs.assets + configs.fileImportJs, newDataJs, function (errUpdateJs){
+                          if (errUpdateJs) throw errUpdateJs;
+                          resolve('Unimport ' + configs.txtGreen + answer + configs.colorReset + '.js');
+                      })
+                  });
+                })
+
                 //read file to remove import css
-                fs.readFile(configs.assets + configs.fileImportScss, 'utf-8', function (err, dataCss){
-                    if (err) throw err;
-                    var newDataCss = removeLineWillDelete(dataCss, answer);
-                    fs.writeFile(configs.assets + configs.fileImportScss, newDataCss, function (errUpdateCss){
-                        if (errUpdateCss) throw errUpdateCss;
-                        console.log('Unimport ' + configs.txtGreen + answer + configs.textWhite + '.css');
-                    })
-                });
+                let promise2 = new Promise((resolve) => {
+                  fs.readFile(configs.assets + configs.fileImportScss, 'utf-8', function (err, dataCss){
+                      if (err) throw err;
+                      var newDataCss = removeLineWillDelete(dataCss, answer);
+                      fs.writeFile(configs.assets + configs.fileImportScss, newDataCss, function (errUpdateCss){
+                          if (errUpdateCss) throw errUpdateCss;
+                          resolve('Unimport ' + configs.txtGreen + answer + configs.colorReset + '.css');
+                      })
+                  });
+                })
+
                 //read all file inside folder
-                fs.readdir(configs.dirModule + answer, (err, files) => {
-                    if (err) throw err;
-                    for (const file of files) {
-                        // delete each file in folder
-                        fs.unlink(configs.dirModule  + answer + '/' + file, err => {
-                            if (err) throw err;
-                            
-                        });
-                    } 
-                });
-                setTimeout(function() {
-                    //delete folder after delete sub of folder
-                    fs.rmdir(configs.dirModule + answer, err => {
-                        console.log('Folder ' + configs.txtGreen + answer + configs.textWhite + ' deleted');
-                        deleteModule();
-                    });
-                }, 1000);
+                let promise3 = new Promise((resolve) => {
+                  fs.readdir(configs.dirModule + answer, (err, files) => {
+                      if (err) throw err;
+                      for (const file of files) {
+                          // delete each file in folder
+                          fs.unlink(configs.dirModule  + answer + '/' + file, err => {
+                              if (err) throw err;
+                              fs.rmdir(configs.dirModule + answer, err => {
+                                resolve('Folder ' + configs.txtGreen + answer + configs.colorReset + ' is deleted');
+                              });
+                          });
+                      } 
+                  });
+                })
+
+                let result1 = await promise1
+                let result2 = await promise2
+                let result3 = await promise3
+
+                console.log(result1)
+                console.log(result2)
+                console.log(result3)
+
+                deleteModule();
+                
             } else {
                 //module don't exist
-                console.log('Module ' + configs.txtGreen + answer +  configs.textWhite + ' do not exist');
+                console.log('Module ' + configs.txtGreen + answer +  configs.colorReset + ' does not exist');
                 deleteModule();
             }
         }
